@@ -8,7 +8,7 @@ from django.conf import settings
 async def on_startup_notify(dp: Dispatcher):
     for admin in settings.ADMINS_LIST:
         try:
-            await dp.bot.send_message(admin, "Bot ishga tushirildi")
+            await dp.bot.send_message(admin, "Админское сообщение: бот запущен.")
 
         except Exception as err:
             logging.exception(err)
