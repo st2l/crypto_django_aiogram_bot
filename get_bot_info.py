@@ -1,4 +1,4 @@
-from robot.models import BotText
+from robot.models import BotText, BotImage
 import logging
 from asgiref.sync import sync_to_async
 
@@ -9,6 +9,18 @@ async def get_bot_text(param: str) -> str:
         logging.info(bot_text)
         
         return bot_text.text
+        
+    except Exception as e:
+        logging.exception(e)
+        
+
+async def get_bot_image(param: str) -> str:
+    try:
+        
+        bot_image = await BotImage.objects.aget(name__contains=param)
+        logging.info(bot_image)
+        
+        return bot_image.image.path
         
     except Exception as e:
         logging.exception(e)
