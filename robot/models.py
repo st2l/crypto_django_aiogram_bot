@@ -13,6 +13,10 @@ class TelegramUser(models.Model):
     chat_id = models.CharField(
         max_length=20
     )
+    lang = models.CharField(
+        max_length=10,
+        null=True
+    )
 
     def __str__(self) -> str:
         return self.chat_id
@@ -23,3 +27,30 @@ class TelegramUser(models.Model):
     def set_user(self, user):
         self.user = user
         self.save()
+
+
+class BotText(models.Model):
+    name = models.CharField(max_length=255, null=True)
+    text = models.TextField()
+
+    def __str__(self):
+        return f'BotText {self.text[:20]}'
+    
+    
+class BotImage(models.Model):
+    name = models.CharField(max_length=255, null=True)
+    image = models.ImageField(upload_to='bot_images/')
+
+    def __str__(self):
+        return f'BotImage {self.name[:20]}'
+
+
+class Offer(models.Model):
+    name = models.CharField(max_length=255)
+    category = models.CharField(max_length=255)
+    geo = models.CharField(max_length=255)
+    traffic_type = models.CharField(max_length=255)
+    offer_link = models.URLField(max_length=200)
+
+    def __str__(self):
+        return self.name
