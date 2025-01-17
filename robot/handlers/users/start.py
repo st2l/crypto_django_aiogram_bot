@@ -8,6 +8,7 @@ from aiogram.dispatcher.filters.builtin import CommandStart
 
 from loader import dp
 from get_bot_info import get_bot_text, get_bot_image
+from robot.keyboards.default import get_language_keyboard
 
 
 @dp.message_handler(CommandStart())
@@ -17,5 +18,6 @@ async def bot_start(message: types.Message):
     
     await message.answer_photo(
         caption=await get_bot_text('start'),
-        photo=open(await get_bot_image('start'), 'rb')
+        photo=open(await get_bot_image('start'), 'rb'),
+        reply_markup=await get_language_keyboard()
     )
