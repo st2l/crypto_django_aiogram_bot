@@ -14,7 +14,6 @@ async def get_offer_geo_keayboard():
     keyboard = InlineKeyboardMarkup()
 
     async for cat in categories:
-        print(cat['geo'], type(cat))
         keyboard.add(InlineKeyboardButton(
             text=cat['geo'], callback_data=f'geo_offer_chosen:{cat["geo"]}'))
 

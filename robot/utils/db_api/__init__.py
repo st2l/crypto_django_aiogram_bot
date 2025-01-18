@@ -1,0 +1,1 @@
+from .offers_filter import get_offers_by_data

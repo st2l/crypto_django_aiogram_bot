@@ -6,6 +6,7 @@ from aiogram import types
 from loader import dp
 from get_bot_info import get_bot_text
 from robot.keyboards.default import get_offer_type_keayboard, get_offer_geo_keayboard, get_offer_traffic_type_keayboard
+from robot.utils.db_api import get_offers_by_data
 
 # FSM
 from aiogram.dispatcher import FSMContext
@@ -85,10 +86,26 @@ async def traffic_type_offer_chosen(call: types.CallbackQuery, state: FSMContext
     # change it to traffic_type
     async with state.proxy() as data:
         data['traffic_type'] = chosen_traffic_type
+        
+        
+        offer_by_data = await get_offers_by_data(data)
+        
+        for offer in offer_by_data:
+            text = ""
+            
+            text += f'Название оффера: {offer.name}\n' + \
+                f'Гео: {offer.geo}\n' + \
+                    f'Тип трафика: {offer.traffic_type}\n'
+                    
+            kb = types.InlineKeyboardMarkup(inline_keyboard=[
+                [types.InlineKeyboardButton(text='Перейти к офферу', url=offer.offer_link)]
+            ])
 
-        await call.answer('')
-        await call.message.answer(
-            text=data,
-        )
+            await call.answer('')
+            await call.bot.send_message(
+                chat_id=call.from_user.id,
+                text=text,
+                reply_markup=kb,
+            )
 
     await state.finish()
