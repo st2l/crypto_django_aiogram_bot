@@ -35,8 +35,8 @@ class BotText(models.Model):
 
     def __str__(self):
         return f'BotText {self.text[:20]}'
-    
-    
+
+
 class BotImage(models.Model):
     name = models.CharField(max_length=255, null=True)
     image = models.ImageField(upload_to='bot_images/')
@@ -51,6 +51,29 @@ class Offer(models.Model):
     geo = models.CharField(max_length=255)
     traffic_type = models.CharField(max_length=255)
     offer_link = models.URLField(max_length=200)
+
+    def __str__(self):
+        return self.name
+
+
+class Geos(models.Model):
+    name = models.CharField(max_length=255)
+    code = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+
+class TrafficTypes(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+
+class Categories(models.Model):
+    name = models.CharField(max_length=255)
+    code = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name

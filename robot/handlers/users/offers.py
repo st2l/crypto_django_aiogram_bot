@@ -48,7 +48,7 @@ async def category_offer_chosen(call: types.CallbackQuery, state: FSMContext):
 
     await call.answer('')
     await call.message.answer(
-        text=await get_bot_text(f'offers category chosen {telegram_user.lang}') + f'\n{chosen_category}',
+        text=await get_bot_text(f'offers category chosen {telegram_user.lang}'),
         reply_markup=await get_offer_geo_keayboard(),
     )
 
@@ -68,7 +68,7 @@ async def geo_offer_chosen(call: types.CallbackQuery, state: FSMContext):
 
     await call.answer('')
     await call.message.answer(
-        text=await get_bot_text(f'offers geo chosen {telegram_user.lang}') + f'\n{chosen_geo}',
+        text=await get_bot_text(f'offers geo chosen {telegram_user.lang}'),
         reply_markup=await get_offer_traffic_type_keayboard(),
     )
 
@@ -87,25 +87,45 @@ async def traffic_type_offer_chosen(call: types.CallbackQuery, state: FSMContext
     async with state.proxy() as data:
         data['traffic_type'] = chosen_traffic_type
         
+        logging.info(f'Offer data: {data}')
         
         offer_by_data = await get_offers_by_data(data)
         
         for offer in offer_by_data:
-            text = ""
             
-            text += f'Название оффера: {offer.name}\n' + \
-                f'Гео: {offer.geo}\n' + \
-                    f'Тип трафика: {offer.traffic_type}\n'
-                    
-            kb = types.InlineKeyboardMarkup(inline_keyboard=[
-                [types.InlineKeyboardButton(text='Перейти к офферу', url=offer.offer_link)]
-            ])
+            if telegram_user.lang == 'ru':
+                text = ""
+                
+                text += f'Название оффера: {offer.name}\n' + \
+                    f'Гео: {offer.geo}\n' + \
+                        f'Тип трафика: {offer.traffic_type}\n'
+                        
+                kb = types.InlineKeyboardMarkup(inline_keyboard=[
+                    [types.InlineKeyboardButton(text='Перейти к офферу', url=offer.offer_link)]
+                ])
 
-            await call.answer('')
-            await call.bot.send_message(
-                chat_id=call.from_user.id,
-                text=text,
-                reply_markup=kb,
-            )
+                await call.answer('')
+                await call.bot.send_message(
+                    chat_id=call.from_user.id,
+                    text=text,
+                    reply_markup=kb,
+                )
+            else:
+                text = ""
+                
+                text += f'Offer name: {offer.name}\n' + \
+                    f'Geo: {offer.geo}\n' + \
+                        f'Traffic type: {offer.traffic_type}\n'
+                        
+                kb = types.InlineKeyboardMarkup(inline_keyboard=[
+                    [types.InlineKeyboardButton(text='Go to offer', url=offer.offer_link)]
+                ])
+
+                await call.answer('')
+                await call.bot.send_message(
+                    chat_id=call.from_user.id,
+                    text=text,
+                    reply_markup=kb,
+                )
 
     await state.finish()
