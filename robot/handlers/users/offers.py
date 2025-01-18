@@ -91,6 +91,19 @@ async def traffic_type_offer_chosen(call: types.CallbackQuery, state: FSMContext
         
         offer_by_data = await get_offers_by_data(data)
         
+        if not offer_by_data:
+            if telegram_user.lang == 'ru':
+                text = "По вашему запросу ничего не найдено"
+            else:
+                text = "Nothing found by your request"
+                
+            await call.answer('')
+            await call.message.answer(
+                text=text,
+            )
+            await state.finish()
+            return
+        
         for offer in offer_by_data:
             
             if telegram_user.lang == 'ru':
