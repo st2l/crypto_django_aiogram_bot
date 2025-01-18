@@ -17,5 +17,6 @@ async def get_community_kb():
                 url=button.url,
             )
         )
+    keyboard.add(InlineKeyboardButton(text="BACK 🔙", callback_data="main_menu"))
 
     return keyboard

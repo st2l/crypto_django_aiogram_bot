@@ -18,5 +18,6 @@ async def get_offer_traffic_type_keayboard():
             text=traffic_type.name,
             callback_data=f'traffic_type_offer_chosen:{traffic_type.name}')
         )
+    keyboard.inline_keyboard.append([InlineKeyboardButton(text="BACK 🔙", callback_data="main_menu")])
 
     return keyboard

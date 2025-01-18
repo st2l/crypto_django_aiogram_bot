@@ -19,7 +19,7 @@ class ChooseOffer(StatesGroup):
     traffic_type = State()
 
 
-@dp.callback_query_handler(lambda call: call.data.startswith('offers'))
+@dp.callback_query_handler(lambda call: call.data.startswith('offers'), state='*')
 async def language_change(call: types.CallbackQuery):
     telegram_user, _ = await TelegramUser.objects.aget_or_create(chat_id=call.from_user.id)
 
@@ -30,6 +30,7 @@ async def language_change(call: types.CallbackQuery):
     await call.message.answer(
         text=await get_bot_text(f'offers clicked {telegram_user.lang}'),
         reply_markup=await get_offer_type_keayboard(),
+        parse_mode='Markdown'
     )
 
 
@@ -50,6 +51,7 @@ async def category_offer_chosen(call: types.CallbackQuery, state: FSMContext):
     await call.message.answer(
         text=await get_bot_text(f'offers category chosen {telegram_user.lang}'),
         reply_markup=await get_offer_geo_keayboard(),
+        parse_mode='Markdown'
     )
 
 
@@ -70,6 +72,8 @@ async def geo_offer_chosen(call: types.CallbackQuery, state: FSMContext):
     await call.message.answer(
         text=await get_bot_text(f'offers geo chosen {telegram_user.lang}'),
         reply_markup=await get_offer_traffic_type_keayboard(),
+        parse_mode='Markdown'
+        
     )
 
 # !!! FINISH
@@ -122,6 +126,7 @@ async def traffic_type_offer_chosen(call: types.CallbackQuery, state: FSMContext
                     chat_id=call.from_user.id,
                     text=text,
                     reply_markup=kb,
+                    parse_mode='Markdown'
                 )
             else:
                 text = ""
@@ -139,6 +144,8 @@ async def traffic_type_offer_chosen(call: types.CallbackQuery, state: FSMContext
                     chat_id=call.from_user.id,
                     text=text,
                     reply_markup=kb,
+                    parse_mode='Markdown'
+                    
                 )
 
     await state.finish()

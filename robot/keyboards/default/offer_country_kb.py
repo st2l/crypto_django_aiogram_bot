@@ -11,10 +11,11 @@ async def get_offer_geo_keayboard():
         Geos.objects.all, thread_sensitive=True
     )()
 
-    keyboard = InlineKeyboardMarkup()
+    keyboard = InlineKeyboardMarkup(row_width=3)
 
     async for geo in geo_s:
         keyboard.add(InlineKeyboardButton(
             text=geo.name, callback_data=f'geo_offer_chosen:{geo.code}'))
+    keyboard.inline_keyboard.append([InlineKeyboardButton(text="BACK 🔙", callback_data="main_menu")])
 
     return keyboard
