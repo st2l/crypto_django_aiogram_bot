@@ -25,10 +25,10 @@ EXPOSE 8000
 RUN python manage.py makemigrations && python manage.py migrate
 
 # Create an admin
-RUN export DJANGO_SUPERUSER_EMAIL=admin@example.com
-RUN export DJANGO_SUPERUSER_USERNAME=admin
-RUN export DJANGO_SUPERUSER_PASSWORD=admin
-RUN python manage.py createsuperuser --noinput
+# RUN export DJANGO_SUPERUSER_EMAIL=admin@example.com
+# RUN export DJANGO_SUPERUSER_USERNAME=admin
+# RUN export DJANGO_SUPERUSER_PASSWORD=admin
+# RUN python manage.py createsuperuser --noinput
 
 # Run the migrations and start both the Django server and the Aiogram bot
 CMD ["sh", "-c", "python manage.py runserver 0.0.0.0:8000 & python manage.py runbot"]
