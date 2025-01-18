@@ -21,5 +21,8 @@ COPY . /app/
 # Expose the port for the Django server
 EXPOSE 8000
 
+# Create an admin
+RUN python manage.py createsuperuser --noinput
+
 # Run the migrations and start both the Django server and the Aiogram bot
 CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000 & python manage.py runbot"]
