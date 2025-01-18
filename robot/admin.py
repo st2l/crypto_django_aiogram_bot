@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import TelegramUser, BotImage, BotText, Offer, Geos, Categories, TrafficTypes
+from .models import TelegramUser, BotImage, BotText, Offer, Geos, Categories, TrafficTypes, CommunityButton
 
 
 class TelegramUserAdmin(admin.ModelAdmin):
@@ -32,6 +32,10 @@ class TrafficTypesAdmin(admin.ModelAdmin):
     list_display = ['name', 'id']
 
 
+class CommunityButtonAdmin(admin.ModelAdmin):
+    list_display = ['name', 'url', 'id']
+
+
 admin.site.register(TelegramUser, TelegramUserAdmin)
 admin.site.register(BotImage, BotImageAdmin)
 admin.site.register(BotText, BotTextAdmin)
@@ -39,3 +43,4 @@ admin.site.register(Offer, OfferAdmin)
 admin.site.register(Geos, GeosAdmin)
 admin.site.register(Categories, CategoriesAdmin)
 admin.site.register(TrafficTypes, TrafficTypesAdmin)
+admin.site.register(CommunityButton, CommunityButtonAdmin)
