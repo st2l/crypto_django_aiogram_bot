@@ -17,5 +17,7 @@ async def get_offer_geo_keayboard():
         keyboard.add(InlineKeyboardButton(
             text=geo.name, callback_data=f'geo_offer_chosen:{geo.code}'))
     keyboard.inline_keyboard.append([InlineKeyboardButton(text="BACK 🔙", callback_data="main_menu")])
+    keyboard.inline_keyboard.append([InlineKeyboardButton(text="Continue ⏭", callback_data="geo_offer_chosen:continue")])
+
 
     return keyboard

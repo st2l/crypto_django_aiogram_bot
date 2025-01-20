@@ -1,3 +1,4 @@
+import logging
 from robot.models import Offer
 from asgiref.sync import sync_to_async
 
@@ -8,10 +9,18 @@ async def get_offers_by_data(data: dict):
     )()
 
     ans = []
+    logging.info(f'Data: {data}')
+    
     async for offer in all_offers:
-        if (data['category'] in offer.category) and \
-            (data['geo'] in offer.geo) and \
-                (data['traffic_type'] in offer.traffic_type):
+        
+        logging.info(set(offer.category.split()), set(offer.geo.split()), set(offer.traffic_type.split()))
+        logging.info(set(data['category']) & set(offer.category.split()))
+        logging.info(set(data['geo']) & set(offer.geo.split()))
+        logging.info(set(data['traffic_type']) & set(offer.traffic_type.split()))
+        
+        if (set(data['category']) & set(offer.category.split())) and \
+            (set(data['geo']) & set(offer.geo.split())) and \
+                (set(data['traffic_type']) & set(offer.traffic_type.split())):
             ans.append(offer)
     
     return ans

@@ -18,5 +18,7 @@ async def get_offer_type_keayboard():
             text=cat.name, callback_data=f'category_offer_chosen:{cat.code}')
         )
     keyboard.inline_keyboard.append([InlineKeyboardButton(text="BACK 🔙", callback_data="main_menu")])
+    keyboard.inline_keyboard.append([InlineKeyboardButton(text="Continue ⏭", callback_data="category_offer_chosen:continue")])
 
+    
     return keyboard
