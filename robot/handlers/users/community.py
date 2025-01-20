@@ -18,7 +18,7 @@ async def community(call: types.CallbackQuery):
     telegram_user, _ = await TelegramUser.objects.aget_or_create(chat_id=call.from_user.id)
 
     await call.answer('')
-    await call.message.answer(
+    await call.message.edit_text(
         text=await get_bot_text(f'community {telegram_user.lang}'),
         reply_markup=await get_community_kb(),
         parse_mode='Markdown'

@@ -32,7 +32,7 @@ async def statistics(call: types.CallbackQuery):
         text += f'\n_{key}_ -- {val}'
 
     await call.answer('')
-    await call.message.answer(
+    await call.message.edit_text(
         text=text,
         reply_markup=await get_back_kb(),
         parse_mode='Markdown'

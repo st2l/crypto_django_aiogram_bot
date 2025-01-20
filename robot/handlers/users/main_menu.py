@@ -17,7 +17,7 @@ async def main_menu(call: types.CallbackQuery, state: FSMContext):
     await state.finish()
 
     await call.answer('')
-    await call.message.answer(
+    await call.message.edit_text(
         text=await get_bot_text(f'main menu {telegram_user.lang}'),
         reply_markup=await get_main_menu_kb(),
         parse_mode='Markdown'

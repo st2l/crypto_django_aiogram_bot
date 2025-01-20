@@ -5,7 +5,7 @@ from aiogram import types
 
 from loader import dp
 from get_bot_info import get_bot_text
-from robot.keyboards.default import get_offer_type_keayboard, get_offer_geo_keayboard, get_offer_traffic_type_keayboard
+from robot.keyboards.default import get_offer_type_keayboard, get_offer_geo_keayboard, get_offer_traffic_type_keayboard, get_back_kb
 from robot.utils.db_api import get_offers_by_data
 
 # FSM
@@ -27,7 +27,7 @@ async def language_change(call: types.CallbackQuery):
     await ChooseOffer.category.set()
 
     await call.answer('')
-    await call.message.answer(
+    await call.message.edit_text(
         text=await get_bot_text(f'offers clicked {telegram_user.lang}'),
         reply_markup=await get_offer_type_keayboard(),
         parse_mode='Markdown'
@@ -48,7 +48,7 @@ async def category_offer_chosen(call: types.CallbackQuery, state: FSMContext):
     await ChooseOffer.geo.set()
 
     await call.answer('')
-    await call.message.answer(
+    await call.message.edit_text(
         text=await get_bot_text(f'offers category chosen {telegram_user.lang}'),
         reply_markup=await get_offer_geo_keayboard(),
         parse_mode='Markdown'
@@ -69,7 +69,7 @@ async def geo_offer_chosen(call: types.CallbackQuery, state: FSMContext):
     await ChooseOffer.traffic_type.set()
 
     await call.answer('')
-    await call.message.answer(
+    await call.message.edit_text(
         text=await get_bot_text(f'offers geo chosen {telegram_user.lang}'),
         reply_markup=await get_offer_traffic_type_keayboard(),
         parse_mode='Markdown'
@@ -102,8 +102,9 @@ async def traffic_type_offer_chosen(call: types.CallbackQuery, state: FSMContext
                 text = "Nothing found by your request"
                 
             await call.answer('')
-            await call.message.answer(
+            await call.message.edit_text(
                 text=text,
+                reply_markup=await get_back_kb(),
             )
             await state.finish()
             return
