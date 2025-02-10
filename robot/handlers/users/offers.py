@@ -43,18 +43,23 @@ async def category_offer_chosen(call: types.CallbackQuery, state: FSMContext):
 
     if chosen_category != 'continue':
         # update state in FSM
-        # change it to geo
         async with state.proxy() as data:
             arr = data.get('category', [])
             arr.append(chosen_category)
             data['category'] = arr
             
+            # Формируем текст с выбранными категориями
+            categories_text = await get_bot_text(f'offers category chosen {telegram_user.lang}') + \
+                ("\nВыбранные категории:\n" if telegram_user.lang == 'ru' else "\nSelected categories:\n")
+            for category in arr:
+                categories_text += f"• {category}\n"
+            
         await call.answer('')
-        # await call.message.edit_text(
-        #     text=await get_bot_text(f'offers clicked {telegram_user.lang}'),
-        #     reply_markup=await get_offer_type_keayboard(),
-        #     parse_mode='Markdown'
-        # )
+        await call.message.edit_text(
+            text=categories_text,
+            reply_markup=await get_offer_type_keayboard(),
+            parse_mode='Markdown'
+        )
     else:
         await ChooseOffer.geo.set()
 
@@ -74,19 +79,23 @@ async def geo_offer_chosen(call: types.CallbackQuery, state: FSMContext):
     logging.info(f'Chosen geo: {chosen_geo}')
 
     if chosen_geo != 'continue':
-        # update state in FSM
-        # change it to traffic_type
         async with state.proxy() as data:
             arr = data.get('geo', [])
             arr.append(chosen_geo)
             data['geo'] = arr
+            
+            # Формируем текст с выбранными гео
+            geo_text = await get_bot_text(f'offers geo chosen {telegram_user.lang}') + \
+                ("\nВыбранные страны:\n" if telegram_user.lang == 'ru' else "\nSelected countries:\n")  
+            for geo in arr:
+                geo_text += f"• {geo}\n"
         
         await call.answer('')
-        # await call.message.edit_text(
-        #     text=await get_bot_text(f'offers category chosen {telegram_user.lang}'),
-        #     reply_markup=await get_offer_geo_keayboard(),
-        #     parse_mode='Markdown'
-        # )
+        await call.message.edit_text(
+            text=geo_text,
+            reply_markup=await get_offer_geo_keayboard(),
+            parse_mode='Markdown'
+        )
     else:
         await ChooseOffer.traffic_type.set()
         await call.answer('')
@@ -94,10 +103,7 @@ async def geo_offer_chosen(call: types.CallbackQuery, state: FSMContext):
             text=await get_bot_text(f'offers geo chosen {telegram_user.lang}'),
             reply_markup=await get_offer_traffic_type_keayboard(),
             parse_mode='Markdown'
-
         )
-
-# !!! FINISH
 
 
 @dp.callback_query_handler(lambda call: call.data.startswith('traffic_type_offer_chosen'), state=ChooseOffer.traffic_type)
@@ -113,12 +119,18 @@ async def traffic_type_offer_chosen(call: types.CallbackQuery, state: FSMContext
             arr.append(chosen_traffic_type)
             data['traffic_type'] = arr
 
+            # Формируем текст с выбранными типами трафика
+            traffic_text = await get_bot_text(f'offers geo chosen {telegram_user.lang}') + \
+                ("\nВыбранные типы трафика:\n" if telegram_user.lang == 'ru' else "\nSelected traffic types:\n")
+            for traffic_type in arr:
+                traffic_text += f"• {traffic_type}\n"
+
             await call.answer('')
-            # await call.message.edit_text(
-            #     text=await get_bot_text(f'offers geo chosen {telegram_user.lang}'),
-            #     reply_markup=await get_offer_traffic_type_keayboard(),
-            #     parse_mode='Markdown'
-            # )
+            await call.message.edit_text(
+                text=traffic_text,
+                reply_markup=await get_offer_traffic_type_keayboard(),
+                parse_mode='Markdown'
+            )
     else:
         # update state in FSM
         # change it to traffic_type
