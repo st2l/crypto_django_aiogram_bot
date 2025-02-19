@@ -3,7 +3,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 # Create inline keyboard buttons
 offers_button = InlineKeyboardButton(text="OFFERS 👨‍💻", callback_data="offers")
 payments_button = InlineKeyboardButton(
-    text="PAYMENTS 💸", callback_data="payments")
+    text="SERVICES 💸", callback_data="services")
 statistics_button = InlineKeyboardButton(
     text="STATISTICS 📊", callback_data="statistics")
 community_button = InlineKeyboardButton(

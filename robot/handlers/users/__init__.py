@@ -6,3 +6,4 @@ from . import statistics
 from . import community
 from . import main_menu
 from . import settings
+from . import services

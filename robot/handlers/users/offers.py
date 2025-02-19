@@ -23,7 +23,7 @@ class ChooseOffer(StatesGroup):
 async def language_change(call: types.CallbackQuery):
     telegram_user, _ = await TelegramUser.objects.aget_or_create(chat_id=call.from_user.id)
 
-    # state FSM to category
+    # state FSM to categorym
     await ChooseOffer.category.set()
 
     await call.answer('')
