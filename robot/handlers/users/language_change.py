@@ -1,3 +1,5 @@
+import logging
+
 from asgiref.sync import sync_to_async
 from robot.models import TelegramUser
 
@@ -10,6 +12,7 @@ from robot.keyboards.default import get_main_menu_kb
 
 @dp.callback_query_handler(lambda call: call.data.startswith('change_language'), state='*')
 async def language_change(call: types.CallbackQuery):
+    logging.info(f'language_change: {call.data}')
     telegram_user, _ = await TelegramUser.objects.aget_or_create(chat_id=call.from_user.id)
 
     chosen_lang = call.data.split(':')[-1]

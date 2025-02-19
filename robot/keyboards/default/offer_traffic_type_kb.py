@@ -5,7 +5,7 @@ from asgiref.sync import sync_to_async
 from robot.models import TrafficTypes
 
 
-async def get_offer_traffic_type_keayboard():
+async def get_offer_traffic_type_keayboard(chosen_traffic_type: list = []):
 
     traffic_types = await sync_to_async(
         TrafficTypes.objects.all, thread_sensitive=True
@@ -15,10 +15,11 @@ async def get_offer_traffic_type_keayboard():
 
     async for traffic_type in traffic_types:
         keyboard.add(InlineKeyboardButton(
-            text=traffic_type.name,
-            callback_data=f'traffic_type_offer_chosen:{traffic_type.name}')
-        )
-    keyboard.inline_keyboard.append([InlineKeyboardButton(text="BACK 🔙", callback_data="main_menu")])
-    keyboard.inline_keyboard.append([InlineKeyboardButton(text="Continue ⏭", callback_data="traffic_type_offer_chosen:continue")])
-    
+            text=f"{'✅ ' if traffic_type.name in chosen_traffic_type else ''}{traffic_type.name}",
+            callback_data=f'traffic_type_offer_chosen:{traffic_type.name}'))
+    keyboard.inline_keyboard.append(
+        [InlineKeyboardButton(text="BACK 🔙", callback_data="main_menu")])
+    keyboard.inline_keyboard.append([InlineKeyboardButton(
+        text="Continue ⏭", callback_data="traffic_type_offer_chosen:continue")])
+
     return keyboard
