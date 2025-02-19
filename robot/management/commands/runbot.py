@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 
 from aiogram import executor
-
+from aiogram.types import Update
 from loader import dp
 
 from robot.middlewares import *
@@ -20,4 +20,4 @@ class Command(BaseCommand):
     help = 'RUN COMMAND: python manage.py runbot'
 
     def handle(self, *args, **options):
-        executor.start_polling(dp, on_startup=on_startup)
+        executor.start_polling(dp, on_startup=on_startup, allowed_updates=["message", "callback_query"])

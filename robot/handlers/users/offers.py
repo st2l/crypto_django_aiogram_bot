@@ -50,11 +50,13 @@ async def category_offer_chosen(call: types.CallbackQuery, state: FSMContext):
             else:   
                 arr.append(chosen_category)
             data['category'] = arr
+
+            logging.info(f'Offer data: {arr}')
             
         await call.answer('')
         await call.message.edit_text(
-            text=await get_bot_text(f'offers category chosen {telegram_user.lang}'),
-            reply_markup=await get_offer_type_keayboard(chosen_category),
+            text=await get_bot_text(f'offers clicked {telegram_user.lang}'),
+            reply_markup=await get_offer_type_keayboard(arr),
             parse_mode='Markdown'
         )
     else:
@@ -83,11 +85,13 @@ async def geo_offer_chosen(call: types.CallbackQuery, state: FSMContext):
             else:
                 arr.append(chosen_geo)
             data['geo'] = arr
+
+            logging.info(f'Offer data: {arr}')
         
         await call.answer('')
         await call.message.edit_text(
-            text=await get_bot_text(f'offers geo chosen {telegram_user.lang}'),
-            reply_markup=await get_offer_geo_keayboard(chosen_geo),
+            text=await get_bot_text(f'offers category chosen {telegram_user.lang}'),
+            reply_markup=await get_offer_geo_keayboard(arr),
             parse_mode='Markdown'
         )
     else:
@@ -116,10 +120,12 @@ async def traffic_type_offer_chosen(call: types.CallbackQuery, state: FSMContext
                 arr.append(chosen_traffic_type)
             data['traffic_type'] = arr
 
+            logging.info(f'Offer data: {arr}')
+
             await call.answer('')
             await call.message.edit_text(
                 text=await get_bot_text(f'offers geo chosen {telegram_user.lang}'),
-                reply_markup=await get_offer_traffic_type_keayboard(chosen_traffic_type),
+                reply_markup=await get_offer_traffic_type_keayboard(arr),
                 parse_mode='Markdown'
             )
     else:
