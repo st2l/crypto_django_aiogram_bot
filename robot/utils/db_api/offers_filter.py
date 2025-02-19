@@ -3,7 +3,7 @@ from robot.models import Offer
 from asgiref.sync import sync_to_async
 
 
-async def get_offers_by_data(data: dict):
+async def get_offers_by_data(data: dict) -> list[Offer]:
     all_offers = await sync_to_async(
         Offer.objects.all, thread_sensitive=True
     )()

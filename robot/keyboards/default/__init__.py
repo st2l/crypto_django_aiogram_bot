@@ -6,3 +6,4 @@ from .offer_traffic_type_kb import get_offer_traffic_type_keayboard
 from .community_kb import get_community_kb
 from .community_kb import get_community_kb
 from .back_kb import get_back_kb
+from .offers_result_kb import get_offers_result_kb

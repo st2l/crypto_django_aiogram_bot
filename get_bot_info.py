@@ -11,8 +11,8 @@ async def get_bot_text(param: str) -> str:
         return bot_text.text
         
     except Exception as e:
-        logging.exception(e)
-        
+        bot_text = await BotText.objects.acreate(name=param, text='тестовый текст')
+        return bot_text.text
 
 async def get_bot_image(param: str) -> str:
     try:

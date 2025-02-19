@@ -1,11 +1,11 @@
 import logging
 
-from robot.models import TelegramUser
+from robot.models import TelegramUser, Offer
 from aiogram import types
-
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from loader import dp
 from get_bot_info import get_bot_text
-from robot.keyboards.default import get_offer_type_keayboard, get_offer_geo_keayboard, get_offer_traffic_type_keayboard, get_back_kb
+from robot.keyboards.default import get_offer_type_keayboard, get_offer_geo_keayboard, get_offer_traffic_type_keayboard, get_back_kb, get_offers_result_kb
 from robot.utils.db_api import get_offers_by_data
 
 # FSM
@@ -47,12 +47,12 @@ async def category_offer_chosen(call: types.CallbackQuery, state: FSMContext):
             arr = data.get('category', [])
             if chosen_category in arr:
                 arr.remove(chosen_category)
-            else:   
+            else:
                 arr.append(chosen_category)
             data['category'] = arr
 
             logging.info(f'Offer data: {arr}')
-            
+
         await call.answer('')
         await call.message.edit_text(
             text=await get_bot_text(f'offers clicked {telegram_user.lang}'),
@@ -87,7 +87,7 @@ async def geo_offer_chosen(call: types.CallbackQuery, state: FSMContext):
             data['geo'] = arr
 
             logging.info(f'Offer data: {arr}')
-        
+
         await call.answer('')
         await call.message.edit_text(
             text=await get_bot_text(f'offers category chosen {telegram_user.lang}'),
@@ -129,6 +129,7 @@ async def traffic_type_offer_chosen(call: types.CallbackQuery, state: FSMContext
                 parse_mode='Markdown'
             )
     else:
+        await call.answer('')
         # update state in FSM
         # change it to traffic_type
         async with state.proxy() as data:
@@ -150,47 +151,94 @@ async def traffic_type_offer_chosen(call: types.CallbackQuery, state: FSMContext
                 )
                 await state.finish()
                 return
+            else:
+                # save offer_by_data to state
+                await state.update_data(offer_by_data=offer_by_data)
+                await state.update_data(offer_page=0)
 
-            for offer in offer_by_data:
+            await call.message.edit_text(
+                text=await get_bot_text(f'offers list {telegram_user.lang}'),
+                reply_markup=await get_offers_result_kb(offer_by_data, (await state.get_data())['offer_page']),
+                parse_mode='Markdown'
+            )
 
-                if telegram_user.lang == 'ru':
-                    text = ""
 
-                    text += f'Название оффера: {offer.name}\n' + \
-                        f'Гео: {offer.geo}\n' + \
-                            f'Тип трафика: {offer.traffic_type}\n'
+@dp.callback_query_handler(lambda call: call.data.startswith('offer_next_page'), state=ChooseOffer.traffic_type)
+async def offer_next_page(call: types.CallbackQuery, state: FSMContext):
+    telegram_user, _ = await TelegramUser.objects.aget_or_create(chat_id=call.from_user.id)
 
-                    kb = types.InlineKeyboardMarkup(inline_keyboard=[
-                        [types.InlineKeyboardButton(
-                            text='Перейти к офферу', url=offer.offer_link)]
-                    ])
+    await call.answer('')
+    offer_by_data = (await state.get_data())['offer_by_data']
 
-                    await call.answer('')
-                    await call.bot.send_message(
-                        chat_id=call.from_user.id,
-                        text=text,
-                        reply_markup=kb,
-                        parse_mode='Markdown'
-                    )
-                else:
-                    text = ""
+    async with state.proxy() as data:
+        if (await state.get_data())['offer_page'] < len(offer_by_data) / 5:
+            data['offer_page'] += 1
+            await call.answer('')
+        else:
+            await call.answer('Это последняя страница' if telegram_user.lang == 'ru' else 'This is the last page')
 
-                    text += f'Offer name: {offer.name}\n' + \
-                        f'Geo: {offer.geo}\n' + \
-                            f'Traffic type: {offer.traffic_type}\n'
+    await call.message.edit_text(
+        text=await get_bot_text(f'offers list {telegram_user.lang}'),
+        reply_markup=await get_offers_result_kb(offer_by_data, (await state.get_data())['offer_page']),
+        parse_mode='Markdown'
+    )
 
-                    kb = types.InlineKeyboardMarkup(inline_keyboard=[
-                        [types.InlineKeyboardButton(
-                            text='Go to offer', url=offer.offer_link)]
-                    ])
 
-                    await call.answer('')
-                    await call.bot.send_message(
-                        chat_id=call.from_user.id,
-                        text=text,
-                        reply_markup=kb,
-                        parse_mode='Markdown'
+@dp.callback_query_handler(lambda call: call.data.startswith('offer_prev_page'), state=ChooseOffer.traffic_type)
+async def offer_prev_page(call: types.CallbackQuery, state: FSMContext):
+    telegram_user, _ = await TelegramUser.objects.aget_or_create(chat_id=call.from_user.id)
 
-                    )
+    async with state.proxy() as data:
+        if (await state.get_data())['offer_page'] > 0:
+            data['offer_page'] -= 1
+            await call.answer('')
+        else:
+            await call.answer('Это первая страница' if telegram_user.lang == 'ru' else 'This is the first page')
 
-        await state.finish()
+    offer_by_data = (await state.get_data())['offer_by_data']
+
+    await call.message.edit_text(
+        text=await get_bot_text(f'offers list {telegram_user.lang}'),
+        reply_markup=await get_offers_result_kb(offer_by_data, (await state.get_data())['offer_page']),
+        parse_mode='Markdown'
+    )
+
+
+@dp.callback_query_handler(lambda call: call.data.startswith('offer_get_id'), state=ChooseOffer.traffic_type)
+async def offer_get_id(call: types.CallbackQuery, state: FSMContext):
+    await call.answer('')
+    offer_id = call.data.split(':')[-1]
+    offer = await Offer.objects.aget(id=offer_id)
+    telegram_user, _ = await TelegramUser.objects.aget_or_create(chat_id=call.from_user.id)
+
+    if telegram_user.lang == 'ru':
+        offer_text = f'Название офера: {offer.name}\n\nКатегория офера: {offer.category}\n\nГео: {offer.geo}\n\nТрафик: {offer.traffic_type}\n\nСсылка на офер: {offer.offer_link}'
+    else:
+        offer_text = f'Offer name: {offer.name}\n\nOffer category: {offer.category}\n\nOffer geo: {offer.geo}\n\nOffer traffic: {offer.traffic_type}\n\nOffer link: {offer.offer_link}'
+
+    await call.message.edit_text(
+        text=offer_text,
+        reply_markup=InlineKeyboardMarkup(
+            inline_keyboard=[
+                [InlineKeyboardButton(
+                    url=offer.offer_link, text='Перейти к оферу' if telegram_user.lang == 'ru' else 'Go to offer')],
+                [InlineKeyboardButton(
+                    text='🔙 Back', callback_data='back_to_offers')]
+            ]
+        ),
+        parse_mode='Markdown'
+    )
+
+
+@dp.callback_query_handler(lambda call: call.data.startswith('back_to_offers'), state=ChooseOffer.traffic_type)
+async def back_to_offers(call: types.CallbackQuery, state: FSMContext):
+    await call.answer('')
+    telegram_user, _ = await TelegramUser.objects.aget_or_create(chat_id=call.from_user.id)
+
+    offer_by_data = (await state.get_data())['offer_by_data']
+
+    await call.message.edit_text(
+        text=await get_bot_text(f'offers list {telegram_user.lang}'),
+        reply_markup=await get_offers_result_kb(offer_by_data, (await state.get_data())['offer_page']),
+        parse_mode='Markdown'
+    )
