@@ -8,3 +8,4 @@ from .community_kb import get_community_kb
 from .back_kb import get_back_kb
 from .offers_result_kb import get_offers_result_kb
 from .services_result_kb import get_services_result_kb
+from .get_services_type_kb import get_service_type_keyboard

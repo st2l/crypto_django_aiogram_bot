@@ -4,7 +4,7 @@ from aiogram import types
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from loader import dp
 from get_bot_info import get_bot_text
-from robot.keyboards.default import get_offer_type_keayboard, get_back_kb, get_services_result_kb
+from robot.keyboards.default import get_offer_type_keayboard, get_back_kb, get_services_result_kb, get_service_type_keyboard
 from robot.utils.db_api import get_services_by_category
 
 from aiogram.dispatcher import FSMContext
@@ -23,12 +23,12 @@ async def services_start(call: types.CallbackQuery):
     await call.answer('')
     await call.message.edit_text(
         text=await get_bot_text(f'services clicked {telegram_user.lang}'),
-        reply_markup=await get_offer_type_keayboard(),
+        reply_markup=await get_service_type_keyboard(),
         parse_mode='Markdown'
     )
 
 
-@dp.callback_query_handler(lambda call: call.data.startswith('category_offer_chosen'), state=ChooseService.category)
+@dp.callback_query_handler(lambda call: call.data.startswith('category_service_chosen'), state=ChooseService.category)
 async def service_category_chosen(call: types.CallbackQuery, state: FSMContext):
     telegram_user, _ = await TelegramUser.objects.aget_or_create(chat_id=call.from_user.id)
 
@@ -45,7 +45,7 @@ async def service_category_chosen(call: types.CallbackQuery, state: FSMContext):
 
         await call.message.edit_text(
             text=await get_bot_text(f'services clicked {telegram_user.lang}'),
-            reply_markup=await get_offer_type_keayboard(arr),
+            reply_markup=await get_service_type_keyboard(arr),
             parse_mode='Markdown'
         )
     else:
